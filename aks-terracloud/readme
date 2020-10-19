@@ -1,0 +1,52 @@
+The Azure Kubernetes Service (AKS) is a fully managed Kubernetes service for deploying, managing, and scaling containerized applications on Azure.
+
+In this tutorial, you will deploy a 2 node AKS cluster on your default VPC using Terraform then access its Kubernetes dashboard.
+
+For this tutorial, you will need
+
+#an Azure account
+#a configured Azure CLI
+#kubectl
+
+
+
+>>Create an Active Directory service principal account
+There are many ways to authenticate to the Azure provider. In this tutorial, you will use an Active Directory service principal account. You can learn how to authenticate using a different method here.
+
+First, you need to create an Active Directory service principal account using the Azure CLI. You should see something like the following.
+
+$ az ad sp create-for-rbac --skip-assignment
+{
+  "appId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+  "displayName": "azure-cli-2019-04-11-00-46-05",
+  "name": "http://azure-cli-2019-04-11-00-46-05",
+  "password": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+  "tenant": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+}
+
+
+>>Update your terraform.tfvars file
+With values.
+
+>>Initialize Terraform
+terraform init
+
+>>Provision the AKS cluster
+terrafom apply
+
+
+
+
+az aks get-credentials --resource-group $(terraform output resource_group_name) --name $(terraform output kubernetes_cluster_name)
+
+kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
+
+az aks enable-addons --addons kube-dashboard --resource-group $(terraform output resource_group_name) --name $(terraform output kubernetes_cluster_name)
+
+
+az aks browse --resource-group $(terraform output resource_group_name) --name $(terraform output kubernetes_cluster_name)
+
+
+
+>>Clean up your workspace
+terraform destroy
